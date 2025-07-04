@@ -31,9 +31,9 @@ Balance Left  : 14053.87
 The main method runs the following five test scenarios:
 
 Test Case	Description
-✅ Test 1	Normal successful checkout with multiple product types
-⛔ Test 2	Cart contains an expired product (Pizza)
-⛔ Test 3	Out of stock quantity requested
-⛔ Test 4	Empty cart checkout attempt
-⛔ Test 5	Insufficient balance to complete the order
+- Test 1	Normal successful checkout with multiple product types
+- Test 2	Cart contains an expired product (Pizza)
+- Test 3	Out of stock quantity requested
+- Test 4	Empty cart checkout attempt
+- Test 5	Insufficient balance to complete the order
 
