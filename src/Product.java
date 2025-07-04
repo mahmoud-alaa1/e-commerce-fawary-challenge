@@ -1,60 +1,53 @@
+import java.time.LocalDate;
+
 public class Product {
     private String name;
     private double price;
     private int quantity;
 
-    private Expirable expirableBehavior;
-    private Shippable shippableBehavior;
+    private Double weight;
+    private LocalDate expiryDate;
 
-    public Product(String name, double price, int quantity, Expirable expirableBehavior,
-                   Shippable shippableBehavior) {
+    public Product(String name, double price, int quantity, Double weight, LocalDate expiryDate) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
-        this.expirableBehavior = expirableBehavior;
-        this.shippableBehavior = shippableBehavior;
-    }
-
-    public boolean isExpirable() {
-        return expirableBehavior != null;
-    }
-
-    public boolean isExpired() {
-        if (expirableBehavior == null)
-            throw new IllegalStateException("Product is not expirable");
-        return isExpirable() && expirableBehavior.isExpired();
+        this.weight = weight;
+        this.expiryDate = expiryDate;
     }
 
     public boolean isShippable() {
-        return shippableBehavior != null;
+        return weight != null;
     }
 
     public double getWeight() {
-        if (shippableBehavior == null)
+        if (!isShippable())
             throw new IllegalStateException("Product is not shippable");
-        return shippableBehavior.getWeight();
+        return weight;
     }
 
-    public String getName() {
-        return name;
+    public boolean isExpirable() {
+        return expiryDate != null;
     }
 
-    public double getPrice() {
-        return price;
+    public boolean isExpired() {
+        if (!isExpirable())
+            throw new IllegalStateException("Product is not expirable");
+        return expiryDate.isBefore(LocalDate.now());
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
+    public String getName() { return name; }
+    public double getPrice() { return price; }
+    public int getQuantity() { return quantity; }
 
     public void reduceQuantityBy(int amount) {
         if (amount > quantity)
-            throw new IllegalArgumentException("Insufficient stock");
+            throw new IllegalArgumentException("Out of stock");
         quantity -= amount;
     }
     public void reduceQuantityTo(int qty) {
-        if (qty >= quantity)
-            throw new IllegalArgumentException("The quantity passed is greater than the stock");
+        if (qty > quantity)
+            throw new IllegalArgumentException("The passed quantity should be less than current quantity");
         quantity = qty;
     }
 }
