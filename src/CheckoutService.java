@@ -2,16 +2,16 @@ import java.util.*;
 
 public class CheckoutService {
 
-    static final public double shippingRate=0.336;
     public static void checkout(Customer customer) {
         Cart cart = customer.getCart();
 
         handleEmptyCart(cart);
         handleExpiredProducts(cart);
+        List<IShippableItem> itemsToShip = extractShippableItems(cart);
 
 
         double subtotal = calculateSubtotal(cart);
-        double shippingFees = calculateShipping(cart);
+        double shippingFees = ShippingService.calculateShippingFee(itemsToShip);
         double total = subtotal + shippingFees;
 
         ensureCustomerHasEnoughBalance(customer, total);
@@ -20,7 +20,6 @@ public class CheckoutService {
         reduceProductQuantities(cart);
         customer.reduceBalance(total);
 
-        List<IShippableItem> itemsToShip = extractShippableItems(cart);
         ShippingService.ship(itemsToShip);
 
         printReceipt(cart, subtotal, shippingFees, total, customer.getBalance());
@@ -65,18 +64,7 @@ public class CheckoutService {
         return subtotal;
     }
 
-    private static double calculateShipping(Cart cart) {
-        //rate 1$ / 0.36 kg
-        double shippingFee = 0;
 
-        for (Map.Entry<Product, Integer> entry : cart.getItems().entrySet()) {
-            Product product = entry.getKey();
-            int quantity = entry.getValue();
-            shippingFee += product.getWeight() * quantity * shippingRate;
-        }
-
-        return shippingFee;
-    }
 
     private static void ensureCustomerHasEnoughBalance(Customer customer, double total) {
         if (customer.getBalance() < total)
@@ -108,7 +96,7 @@ public class CheckoutService {
     private static void printReceipt(Cart cart, double subtotal, double shipping, double total, double remainingBalance) {
         System.out.println("** Checkout Receipt **");
         for (Map.Entry<Product, Integer> entry : cart.getItems().entrySet()) {
-            System.out.printf("%dx %s - %.2f\n", entry.getValue(), entry.getKey().getName(), entry.getKey().getPrice());
+            System.out.printf("%dx %s \t\t %.2f\n", entry.getValue(), entry.getKey().getName(), entry.getKey().getPrice());
         }
         System.out.println("----------------------");
         System.out.printf("Subtotal      : %.2f\n", subtotal);
