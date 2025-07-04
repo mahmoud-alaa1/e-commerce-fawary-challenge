@@ -1,6 +1,6 @@
 import java.time.LocalDate;
 
-public class Product {
+public class Product implements IShippableItem{
     private String name;
     private double price;
     private int quantity;
@@ -16,16 +16,11 @@ public class Product {
         this.expiryDate = expiryDate;
     }
 
+
+
     public boolean isShippable() {
         return weight != null;
     }
-
-    public double getWeight() {
-        if (!isShippable())
-            throw new IllegalStateException("Product is not shippable");
-        return weight;
-    }
-
     public boolean isExpirable() {
         return expiryDate != null;
     }
@@ -36,7 +31,6 @@ public class Product {
         return expiryDate.isBefore(LocalDate.now());
     }
 
-    public String getName() { return name; }
     public double getPrice() { return price; }
     public int getQuantity() { return quantity; }
 
@@ -50,4 +44,19 @@ public class Product {
             throw new IllegalArgumentException("The passed quantity should be less than current quantity");
         quantity = qty;
     }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public double getWeight() {
+        if (!this.isShippable())
+        {
+            throw new IllegalArgumentException("This item isn't shipable");
+        }
+        return this.weight;
+    }
+
 }
