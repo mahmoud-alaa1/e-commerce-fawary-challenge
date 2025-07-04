@@ -95,13 +95,20 @@ public class CheckoutService {
 
     private static void printReceipt(Cart cart, double subtotal, double shipping, double total, double remainingBalance) {
         System.out.println("** Checkout Receipt **");
+        System.out.printf("%-5s %-25s %-10s %-10s\n", "Qty", "Product", "Unit Price", "Total");
+        System.out.println("------------------------------------------------------------");
+
         for (Map.Entry<Product, Integer> entry : cart.getItems().entrySet()) {
-            System.out.printf("%dx %s \t\t %.2f\n", entry.getValue(), entry.getKey().getName(), entry.getKey().getPrice());
+            int qty = entry.getValue();
+            Product product = entry.getKey();
+            double lineTotal = qty * product.getPrice();
+            System.out.printf("%-5d %-25s %-10.2f %-10.2f\n", qty, product.getName(), product.getPrice(), lineTotal);
         }
-        System.out.println("----------------------");
-        System.out.printf("Subtotal      : %.2f\n", subtotal);
-        System.out.printf("Shipping      : %.2f\n", shipping);
-        System.out.printf("Total Paid    : %.2f\n", total);
-        System.out.printf("Balance Left  : %.2f\n", remainingBalance);
+
+        System.out.println("------------------------------------------------------------");
+        System.out.printf("%-35s : %.2f\n", "Subtotal", subtotal);
+        System.out.printf("%-35s : %.2f\n", "Shipping", shipping);
+        System.out.printf("%-35s : %.2f\n", "Total Paid", total);
+        System.out.printf("%-35s : %.2f\n", "Balance Left", remainingBalance);
     }
 }
