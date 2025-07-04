@@ -2,12 +2,13 @@ import java.util.*;
 
 public class CheckoutService {
 
+    static final public double shippingRate=0.336;
     public static void checkout(Customer customer) {
         Cart cart = customer.getCart();
 
         handleEmptyCart(cart);
         handleExpiredProducts(cart);
-        handleEnoughStocks(cart);
+
 
         double subtotal = calculateSubtotal(cart);
         double shippingFees = calculateShipping(cart);
@@ -43,32 +44,10 @@ public class CheckoutService {
             throw new IllegalStateException("Please remove the expired products and try again");
         }
     }
-    private static void handleEnoughStocks(Cart cart) {
-        List<String> insufficientStockItems = new ArrayList<>();
-
-        for (Map.Entry<Product, Integer> entry : cart.getItems().entrySet()) {
-            Product product = entry.getKey();
-            int requestedQty = entry.getValue();
-
-            if (product.getQuantity() < requestedQty) {
-                String msg = String.format("%s (available: %d, requested: %d)",
-                        product.getName(), product.getQuantity(), requestedQty);
-                insufficientStockItems.add(msg);
-            }
-        }
-
-        if (!insufficientStockItems.isEmpty()) {
-            System.out.println("The following items do not have enough stock:");
-            for (int i = 0; i < insufficientStockItems.size(); i++) {
-                System.out.println((i + 1) + ". " + insufficientStockItems.get(i));
-            }
-            throw new IllegalStateException("Please fix quantities and try again.");
-        }
-    }
 
     private static List<Product> getExpiredItems(Cart cart) {
         List<Product> expiredItems = new ArrayList<>();
-        cart.getItems().forEach((product, qty) -> {
+        cart.getItems().forEach((product, _) -> {
             if (product.isExpirable() && product.isExpired()) {
                 expiredItems.add(product);
             }
@@ -88,13 +67,12 @@ public class CheckoutService {
 
     private static double calculateShipping(Cart cart) {
         //rate 1$ / 0.36 kg
-        double rate = 1 / 0.36;
         double shippingFee = 0;
 
         for (Map.Entry<Product, Integer> entry : cart.getItems().entrySet()) {
             Product product = entry.getKey();
             int quantity = entry.getValue();
-            shippingFee += product.getWeight() * quantity * rate;
+            shippingFee += product.getWeight() * quantity * shippingRate;
         }
 
         return shippingFee;
@@ -113,9 +91,15 @@ public class CheckoutService {
 
     private static List<IShippableItem> extractShippableItems(Cart cart) {
         List<IShippableItem> items = new ArrayList<>();
-        for (Product product : cart.getItems().keySet()) {
-            if (product instanceof IShippableItem) {
-                items.add((IShippableItem) product);
+
+        for (Map.Entry<Product, Integer> entry : cart.getItems().entrySet()) {
+            Product product = entry.getKey();
+            int quantity = entry.getValue();
+
+            if (product.isShippable()) {
+                for (int i = 0; i < quantity; i++) {
+                    items.add(product);
+                }
             }
         }
         return items;

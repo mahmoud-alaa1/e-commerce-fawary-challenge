@@ -5,6 +5,7 @@ public class ShippingService {
         if (items.isEmpty()) return;
 
         System.out.println("** Shipment notice **");
+        System.out.println("Shipping rate is: " + CheckoutService.shippingRate  );
         double totalWeight = 0;
 
         for (IShippableItem item : items) {
