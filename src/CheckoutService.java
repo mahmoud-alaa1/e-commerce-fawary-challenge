@@ -64,8 +64,6 @@ public class CheckoutService {
         return subtotal;
     }
 
-
-
     private static void ensureCustomerHasEnoughBalance(Customer customer, double total) {
         if (customer.getBalance() < total)
             throw new IllegalStateException("Customer balance is not enough");
